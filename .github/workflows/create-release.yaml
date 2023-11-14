@@ -35,3 +35,6 @@ jobs:
             echo "::error ::docker image: ${{ env.IMAGE_REPO }}:${{ inputs.name }} doesn't exist"
             exit 1
           fi
+
+      - name: Get last release version
+        run: ./runtime-watcher/scripts/release/get_last_release.sh
