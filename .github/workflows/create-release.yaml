@@ -1,5 +1,8 @@
 name: "Create release"
 
+env:
+  IMAGE_REPO: europe-docker.pkg.dev/kyma-project/prod/runtime-watcher-skr
+
 on:
   workflow_dispatch:
     inputs:
@@ -19,10 +22,16 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Check if tag already exists
+      - name: Check if source code tag exists
         run: |
           if ! [ $(git tag -l ${{ inputs.name }}) ]; then
             echo "::error ::Tag ${{ inputs.name }} doesn't exist"
             exit 1
           fi
 
+      - name: Check if docker image exists
+        run: |
+          if ! [ $(docker manifest inspect ${{ env.IMAGE_REPO }}:${{ inputs.name }}) ]; then
+            echo "::error ::docker image: ${{ env.IMAGE_REPO }}:${{ inputs.name }} doesn't exist"
+            exit 1
+          fi
