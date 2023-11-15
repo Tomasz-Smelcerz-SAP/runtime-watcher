@@ -2,15 +2,13 @@ name: "Create release"
 
 env:
   IMAGE_REPO: europe-docker.pkg.dev/kyma-project/prod/runtime-watcher-skr
-
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Create release'
+        description: 'Existing tag for the new release'
         default: ""
         required: true
-
 jobs:
   validate-release:
     name: Validate release
@@ -46,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-release
     outputs:
-      release_id: ${{ steps.draft-release.outputs.release_id }}
+      release_id: ${{ steps.draft_release.outputs.release_id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,7 +54,7 @@ jobs:
         id: generate_changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LAST_RELEASE_TAG: ${{needs.validate-release.outputs.last_release_tag}}
+          LAST_RELEASE_TAG: ${{ needs.validate-release.outputs.last_release_tag }}
         run: |
           echo "Generating changelog from version: ${{ inputs.name }} to version: $LAST_RELEASE_TAG" 
           CHANGELOG_FILE_NAME=$(./runtime-watcher/scripts/release/create_changelog.sh ${{ inputs.name }} $LAST_RELEASE_TAG)
