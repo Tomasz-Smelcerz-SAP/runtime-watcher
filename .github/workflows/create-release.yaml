@@ -72,7 +72,7 @@ jobs:
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: draft_release
+    needs: draft-release
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
