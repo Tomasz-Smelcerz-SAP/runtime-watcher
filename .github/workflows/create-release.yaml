@@ -49,4 +49,5 @@ jobs:
       - name: Generate changelog
         env:
           LAST_RELEASE_TAG: ${{needs.validate-release.outputs.last_release_tag}}
-        run: echo "LAST_RELEASE_TAG=$LAST_RELEASE_TAG" 
+        run: |
+          ./runtime-watcher/scripts/release/get_last_release.sh "${{ inputs.name }}" "$LAST_RELEASE_TAG"
