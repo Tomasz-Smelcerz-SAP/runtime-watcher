@@ -20,7 +20,7 @@ CURL_RESPONSE=$(curl -L \
 CURL_EXIT_CODE=$?
 
 if [[ ${CURL_EXIT_CODE} == 0 ]]; then
-    echo "Release with given tag already exists!"
+    echo "Release with tag: $RELEASE_TAG already exists!"
     exit 1
 fi
 
