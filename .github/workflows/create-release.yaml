@@ -41,8 +41,9 @@ jobs:
         run: |
           LAST_RELEASE_TAG=$(./runtime-watcher/scripts/release/get_last_release.sh)
           echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
-  create-draft:
+  draft-release:
     name: Create draft release
+    id: draft_release
     runs-on: ubuntu-latest
     needs: validate-release
     steps:
@@ -60,8 +61,25 @@ jobs:
           CHANGELOG_FILE_NAME=$(./runtime-watcher/scripts/release/create_changelog.sh ${{ inputs.name }} $LAST_RELEASE_TAG)
           echo "changelog_file_name=$CHANGELOG_FILE_NAME" >> $GITHUB_OUTPUT
       - name: Create draft release
+        id: draft_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGELOG_FILE_NAME: ${{ steps.generate_changelog.outputs.changelog_file_name }}
         run: |
-          ./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME
+          RELEASE_ID=$(./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME)
+          echo "release_id=RELEASE_ID" >> $GITHUB_OUTPUT
+    outputs:
+      release_id: ${{ steps.draft-release.outputs.release_id }}
+  publish_release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: draft_release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./runtime-watcher/scripts/release/publish_release.sh ${{ needs.draft-release.outputs.release_id }}
