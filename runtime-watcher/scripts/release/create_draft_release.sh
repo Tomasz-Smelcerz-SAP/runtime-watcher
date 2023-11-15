@@ -7,7 +7,7 @@ set -o pipefail
 
 RELEASE_TAG=$1
 CHANGELOG_FILE_NAME=$2
-CHANGELOG_FILE=$(cat CHANGELOG_FILE_NAME)
+CHANGELOG_FILE=$(cat ${CHANGELOG_FILE_NAME})
 
 #REPOSITORY=kyma-project/runtime-watcher
 REPOSITORY=Tomasz-Smelcerz-SAP/runtime-watcher
