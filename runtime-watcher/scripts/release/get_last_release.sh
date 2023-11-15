@@ -3,7 +3,8 @@
 set -o nounset
 set -o pipefail
 
-GITHUB_URL=https://api.github.com/repos/kyma-project/runtime-watcher
+#GITHUB_URL=https://api.github.com/repos/kyma-project/runtime-watcher
+GITHUB_URL=https://api.github.com/repos/Tomasz-Smelcerz-SAP/runtime-watcher
 
 CURL_RESPONSE=$(curl -L \
   --fail-with-body \
