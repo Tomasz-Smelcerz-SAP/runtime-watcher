@@ -41,8 +41,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set +e
           LAST_RELEASE_TAG=$(./runtime-watcher/scripts/release/get_last_release.sh)
-          echo "LAST_RELEASE_TAG=$LAST_RELEASE_TAG"
+          if [[ $? != 0 ]]; then
+            echo "LAST_RELEASE_TAG=$LAST_RELEASE_TAG"
+            exit 1
+          fi
+          set -e
           echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
   draft-release:
     name: Create draft release
