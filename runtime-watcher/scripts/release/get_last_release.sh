@@ -16,7 +16,6 @@ CURL_RESPONSE=$(curl -L \
 CURL_EXIT_CODE=$?
 
 if [[ ${CURL_EXIT_CODE} == 0 ]]; then
-	#echo "${CURL_RESPONSE}" | jq .id
-	echo "${CURL_RESPONSE}" | jq .tag_name
+	echo "${CURL_RESPONSE}" | jq -r .tag_name
 fi
 exit ${CURL_EXIT_CODE}
