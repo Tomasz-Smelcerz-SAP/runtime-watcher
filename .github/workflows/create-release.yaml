@@ -82,4 +82,7 @@ jobs:
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./runtime-watcher/scripts/release/publish_release.sh ${{ needs.draft-release.outputs.release_id }}
+          RELEASE_ID: ${{ needs.draft-release.outputs.release_id }}
+        run: |
+          echo "RELEASE_ID=$RELEASE_ID"
+          ./runtime-watcher/scripts/release/publish_release.sh $RELEASE_ID
