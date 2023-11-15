@@ -11,6 +11,7 @@ GITHUB_URL=https://api.github.com/repos/Tomasz-Smelcerz-SAP/runtime-watcher
 GITHUB_AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
 
 CURL_RESPONSE=$(curl -L \
+  -s \
   --fail-with-body \
   -X POST \
   -H "Accept: application/vnd.github+json" \

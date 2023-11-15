@@ -15,7 +15,7 @@ CURL_RESPONSE=$(curl -L \
   -H "Accept: application/vnd.github+json" \
   -H "${GITHUB_AUTH_HEADER}" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  "${GITHUB_URL}"/releases/tags/RELEASE_TAG) 
+  "${GITHUB_URL}"/releases/tags/$RELEASE_TAG) 
 
 CURL_EXIT_CODE=$?
 
