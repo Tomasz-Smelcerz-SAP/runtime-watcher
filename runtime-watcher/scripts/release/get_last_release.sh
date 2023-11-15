@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
 set -o nounset
-set -o errexit
-set -E
 set -o pipefail
 
 GITHUB_URL=https://api.github.com/repos/kyma-project/runtime-watcher
-GITHUB_AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
 
 CURL_RESPONSE=$(curl -L \
   --fail-with-body \
@@ -14,7 +11,9 @@ CURL_RESPONSE=$(curl -L \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   "${GITHUB_URL}"/releases/latest) 
 
-echo RESULT: $?
+CURL_EXIT_CODE=$?
+
+echo "${CURL_RESPONSE}"
+exit ${CURL_EXIT_CODE}
 
 # return the id of the release draft
-echo "$CURL_RESPONSE"
