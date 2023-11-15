@@ -43,9 +43,10 @@ jobs:
           echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
   draft-release:
     name: Create draft release
-    id: draft_release
     runs-on: ubuntu-latest
     needs: validate-release
+    outputs:
+      release_id: ${{ steps.draft-release.outputs.release_id }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,8 +69,6 @@ jobs:
         run: |
           RELEASE_ID=$(./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME)
           echo "release_id=RELEASE_ID" >> $GITHUB_OUTPUT
-    outputs:
-      release_id: ${{ steps.draft-release.outputs.release_id }}
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
