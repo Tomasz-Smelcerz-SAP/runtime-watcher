@@ -52,6 +52,7 @@ jobs:
           fetch-depth: 0
       - name: Generate changelog
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LAST_RELEASE_TAG: ${{needs.validate-release.outputs.last_release_tag}}
         run: |
           ./runtime-watcher/scripts/release/create_changelog.sh "${{ inputs.name }}" "$LAST_RELEASE_TAG"
