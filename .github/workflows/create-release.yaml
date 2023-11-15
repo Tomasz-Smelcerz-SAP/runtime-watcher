@@ -15,28 +15,38 @@ jobs:
   validate-release:
     name: Validate release
     runs-on: ubuntu-latest
-
+    outputs:
+      last_release_tag: ${{ steps.get_last_release_tag.outputs.last_release_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
       - name: Check if source code tag exists
         run: |
           if ! [ $(git tag -l ${{ inputs.name }}) ]; then
             echo "::error ::Tag ${{ inputs.name }} doesn't exist"
             exit 1
           fi
-
       - name: Check if docker image exists
         run: |
           if ! $(docker manifest inspect ${{ env.IMAGE_REPO }}:${{ inputs.name }} > /dev/null 2>&1); then
             echo "::error ::docker image: ${{ env.IMAGE_REPO }}:${{ inputs.name }} doesn't exist"
             exit 1
           fi
-
       - name: Get last release version
+        id: get_last_release_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./runtime-watcher/scripts/release/get_last_release.sh
+        run: |
+          LAST_RELEASE_TAG=$(./runtime-watcher/scripts/release/get_last_release.sh)
+          echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
+  generate-changelog:
+    name: Generate changelog
+    runs-on: ubuntu-latest
+    needs: validate-release
+    steps:
+      - name: Generate changelog
+        env:
+          LAST_RELEASE_TAG = ${{needs.validate-release.outputs.last_release_tag}}
+        run: echo "LAST_RELEASE_TAG=$LAST_RELEASE_TAG" 

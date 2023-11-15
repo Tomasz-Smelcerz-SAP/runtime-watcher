@@ -7,6 +7,7 @@ set -o pipefail
 GITHUB_URL=https://api.github.com/repos/Tomasz-Smelcerz-SAP/runtime-watcher
 
 CURL_RESPONSE=$(curl -L \
+  -s \
   --fail-with-body \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -14,7 +15,8 @@ CURL_RESPONSE=$(curl -L \
 
 CURL_EXIT_CODE=$?
 
-echo "${CURL_RESPONSE}"
+if [[ ${CURL_EXIT_CODE} == 0 ]]; then
+	#echo "${CURL_RESPONSE}" | jq .id
+	echo "${CURL_RESPONSE}" | jq .tag_name
+fi
 exit ${CURL_EXIT_CODE}
-
-# return the id of the release draft
