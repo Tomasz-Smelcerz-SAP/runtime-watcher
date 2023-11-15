@@ -29,6 +29,8 @@ JSON_PAYLOAD=$(jq -n \
   }')
 
 CURL_RESPONSE=$(curl -L \
+  -s \
+  --fail-with-body \
   -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "${GITHUB_AUTH_HEADER}" \

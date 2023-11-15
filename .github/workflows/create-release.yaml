@@ -68,7 +68,8 @@ jobs:
           CHANGELOG_FILE_NAME: ${{ steps.generate_changelog.outputs.changelog_file_name }}
         run: |
           RELEASE_ID=$(./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME)
-          echo "release_id=RELEASE_ID" >> $GITHUB_OUTPUT
+          echo "RELEASE_ID=$RELEASE_ID"
+          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
   publish_release:
     name: Publish release
     runs-on: ubuntu-latest
