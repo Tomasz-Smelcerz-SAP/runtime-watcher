@@ -50,4 +50,4 @@ jobs:
         env:
           LAST_RELEASE_TAG: ${{needs.validate-release.outputs.last_release_tag}}
         run: |
-          ./runtime-watcher/scripts/release/create_changelog.sh "${{ inputs.name }}" "$LAST_RELEASE_TAG"
+          $(./runtime-watcher/scripts/release/create_changelog.sh "${{ inputs.name }}" "$LAST_RELEASE_TAG")
