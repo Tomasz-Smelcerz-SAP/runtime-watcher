@@ -19,7 +19,6 @@ if [[ ${CURL_EXIT_CODE} == 0 ]]; then
     echo "${CURL_RESPONSE}" | jq -r .tag_name
 else
     echo "Can't find any previous release - unable to generate changelog"
-    exit 5
 fi
 
 exit ${CURL_EXIT_CODE}

@@ -42,13 +42,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          LAST_RELEASE_TAG=$(./runtime-watcher/scripts/release/get_last_release.sh)
-          if [[ $? != 0 ]]; then
-            echo "LAST_RELEASE_TAG=$LAST_RELEASE_TAG"
-            exit 1
+          SCRIPT_OUTPUT=$(./runtime-watcher/scripts/release/get_last_release.sh)
+          SCRIPT_EXIT_CODE=$?
+          if [[ $SCRIPT_EXIT_CODE != 0 ]]; then
+            echo "$SCRIPT_OUTPUT"
+            exit $SCRIPT_EXIT_CODE
           fi
           set -e
-          echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "last_release_tag=$SCRIPT_OUTPUT" >> $GITHUB_OUTPUT
   draft-release:
     name: Create draft release
     runs-on: ubuntu-latest
