@@ -13,8 +13,6 @@ GITHUB_URL=https://api.github.com/repos/Tomasz-Smelcerz-SAP/runtime-watcher
 GITHUB_AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
 CHANGELOG_FILE="CHANGELOG.md"
 
-echo "Generating changelog from version: ${LAST_RELEASE_TAG} to version: ${CURRENT_RELEASE_TAG}" 
-
 echo "## What has changed" >> ${CHANGELOG_FILE}
 
 git log ${LAST_RELEASE_TAG}..${CURRENT_RELEASE_TAG} --pretty=tformat:"%h" --reverse | while read -r commit
@@ -25,4 +23,4 @@ done
 
 echo -e "\n**Full changelog**: $GITHUB_URL/compare/${LAST_RELEASE_TAG}...${CURRENT_RELEASE_TAG}" >> ${CHANGELOG_FILE}
 
-cat ${CHANGELOG_FILE}
+echo ${CHANGELOG_FILE}
