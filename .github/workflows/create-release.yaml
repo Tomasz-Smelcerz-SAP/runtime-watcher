@@ -58,12 +58,10 @@ jobs:
         run: |
           echo "Generating changelog from version: ${{ inputs.name }} to version: $LAST_RELEASE_TAG" 
           CHANGELOG_FILE_NAME=$(./runtime-watcher/scripts/release/create_changelog.sh ${{ inputs.name }} $LAST_RELEASE_TAG)
-          echo "CHANGELOG_FILE_NAME: $CHANGELOG_FILE_NAME"
           echo "changelog_file_name=$CHANGELOG_FILE_NAME" >> $GITHUB_OUTPUT
       - name: Create draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CHANGELOG_FILE_NAME: ${{ steps.generate_changelog.outputs.changelog_file_name }}
         run: |
-          echo "CHANGELOG_FILE_NAME: $CHANGELOG_FILE_NAME"
           ./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME
