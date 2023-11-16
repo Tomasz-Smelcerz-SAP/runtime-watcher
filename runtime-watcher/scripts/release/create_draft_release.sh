@@ -9,9 +9,7 @@ RELEASE_TAG=$1
 CHANGELOG_FILE_NAME=$2
 CHANGELOG_FILE=$(cat ${CHANGELOG_FILE_NAME})
 
-#REPOSITORY=kyma-project/runtime-watcher
-REPOSITORY=Tomasz-Smelcerz-SAP/runtime-watcher
-GITHUB_URL=https://api.github.com/repos/${REPOSITORY}
+GITHUB_URL=https://api.github.com/repos/${CODE_REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
 
 #echo "RELEASE_TAG: ${RELEASE_TAG}"

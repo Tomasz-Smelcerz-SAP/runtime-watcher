@@ -2,6 +2,8 @@ name: "Create release"
 
 env:
   IMAGE_REPO: europe-docker.pkg.dev/kyma-project/prod/runtime-watcher-skr
+  CODE_REPOSITORY: Tomasz-Smelcerz-SAP/runtime-watcher
+  #CODE_REPOSITORY=kyma-project/runtime-watcher
 on:
   workflow_dispatch:
     inputs:

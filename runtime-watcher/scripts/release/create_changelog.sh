@@ -8,8 +8,7 @@ set -o pipefail
 CURRENT_RELEASE_TAG=$1
 LAST_RELEASE_TAG=$2
 
-#GITHUB_URL=https://api.github.com/repos/kyma-project/runtime-watcher
-GITHUB_URL=https://api.github.com/repos/Tomasz-Smelcerz-SAP/runtime-watcher
+GITHUB_URL=https://api.github.com/repos/${CODE_REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
 CHANGELOG_FILE="CHANGELOG.md"
 
