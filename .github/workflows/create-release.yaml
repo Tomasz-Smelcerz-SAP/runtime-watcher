@@ -44,7 +44,6 @@ jobs:
           echo "last_release_tag=$SCRIPT_OUTPUT" >> $GITHUB_OUTPUT
       - name: Wait for the Docker image
         timeout-minutes: 15
-        env:
         run: ./runtime-watcher/scripts/release/wait_for_image.sh ${{ env.IMAGE_REPO }}:${{ steps.get_current_release_tag.outputs.current_release_tag }}
   draft-release:
     name: Create draft release
