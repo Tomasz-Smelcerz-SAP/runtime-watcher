@@ -6,14 +6,20 @@ set -E
 set -o pipefail
 
 DOCKER_IMAGE=$1
+ITERATIONS="${2:-30}"
+SLEEP_TIME="${3:-30}"
 
-#for i in {1..30} ; do
-for i in {1..3} ; do
+echo "ITERATIONS=$ITERATIONS, SLEEP_TIME=$SLEEP_TIME"
+
+for (( c=1; c<=$ITERATIONS; c++ ))
+do
     if $(docker manifest inspect $1 > /dev/null 2>&1); then
 	    exit 0
     fi
-    echo "Attempt $i: Docker image: $DOCKER_IMAGE doesn't exist"
-    sleep 30
+    echo "Attempt $c: Docker image: $DOCKER_IMAGE doesn't exist"
+    if [[ $c -lt $ITERATIONS ]]; then
+        sleep ${SLEEP_TIME}
+    fi
 done
 
 echo "Fail: Docker image: $DOCKER_IMAGE doesn't exist"

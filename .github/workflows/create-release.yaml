@@ -3,6 +3,7 @@ name: "Create release"
 env:
   IMAGE_REPO: europe-docker.pkg.dev/kyma-project/prod/runtime-watcher-skr
   CODE_REPOSITORY: Tomasz-Smelcerz-SAP/runtime-watcher
+  #TODO: Uncomment
   #CODE_REPOSITORY=kyma-project/runtime-watcher
 on:
   push:
@@ -44,7 +45,12 @@ jobs:
           echo "last_release_tag=$SCRIPT_OUTPUT" >> $GITHUB_OUTPUT
       - name: Wait for the Docker image
         timeout-minutes: 15
-        run: ./runtime-watcher/scripts/release/wait_for_image.sh ${{ env.IMAGE_REPO }}:${{ steps.get_current_release_tag.outputs.current_release_tag }}
+        env:
+          #TODO: Uncomment
+          #ITERATIONS: 30
+          ITERATIONS: 3
+          SLEEP_SECONDS: 30
+        run: ./runtime-watcher/scripts/release/wait_for_image.sh ${{ env.IMAGE_REPO }}:${{ steps.get_current_release_tag.outputs.current_release_tag }} $ITERATIONS $SLEEP_SECONDS
   draft-release:
     name: Create draft release
     runs-on: ubuntu-latest
