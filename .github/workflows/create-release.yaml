@@ -47,7 +47,7 @@ jobs:
         env:
           CURRENT_RELEASE_TAG: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
           IMAGE_URL: ${{ env.IMAGE_REPO }}:$CURRENT_RELEASE_TAG
-        run: ./runtime-watcher/scripts/release/wait_for_image.sh 
+        run: ./runtime-watcher/scripts/release/wait_for_image.sh $IMAGE_URL
   draft-release:
     name: Create draft release
     runs-on: ubuntu-latest
