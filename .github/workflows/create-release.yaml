@@ -45,9 +45,7 @@ jobs:
       - name: Wait for the Docker image
         timeout-minutes: 15
         env:
-          CURRENT_RELEASE_TAG: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
-          IMAGE_URL: ${{ env.IMAGE_REPO }}:$CURRENT_RELEASE_TAG
-        run: ./runtime-watcher/scripts/release/wait_for_image.sh $IMAGE_URL
+        run: ./runtime-watcher/scripts/release/wait_for_image.sh ${{ env.IMAGE_REPO }}:${{ steps.get_current_release_tag.outputs.current_release_tag }}
   draft-release:
     name: Create draft release
     runs-on: ubuntu-latest

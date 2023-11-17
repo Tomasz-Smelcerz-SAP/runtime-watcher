@@ -7,7 +7,8 @@ set -o pipefail
 
 DOCKER_IMAGE=$1
 
-for i in {1..30} ; do
+#for i in {1..30} ; do
+for i in {1..3} ; do
     if $(docker manifest inspect $1 > /dev/null 2>&1); then
 	    exit 0
     fi
