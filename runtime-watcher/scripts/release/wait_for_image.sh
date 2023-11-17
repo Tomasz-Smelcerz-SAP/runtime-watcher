@@ -9,8 +9,6 @@ DOCKER_IMAGE=$1
 ITERATIONS="${2:-30}"
 SLEEP_TIME="${3:-30}"
 
-echo "ITERATIONS=$ITERATIONS, SLEEP_TIME=$SLEEP_TIME"
-
 for (( c=1; c<=$ITERATIONS; c++ ))
 do
     if $(docker manifest inspect $1 > /dev/null 2>&1); then
