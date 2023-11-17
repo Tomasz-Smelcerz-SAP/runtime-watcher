@@ -23,7 +23,9 @@ jobs:
           fetch-depth: 0
       - name: Find the release tag
         id: get_current_release_tag
-        run: echo "current_release_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+        run: |
+          echo "Current release tag: ${GITHUB_REF#refs/*/}"
+          echo "current_release_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
       - name: Check if release doesn't exist yet
         env:
           CURRENT_RELEASE_TAG: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
@@ -42,6 +44,7 @@ jobs:
             exit $SCRIPT_EXIT_CODE
           fi
           set -e
+          echo "Last Release version: $SCRIPT_OUTPUT"
           echo "last_release_tag=$SCRIPT_OUTPUT" >> $GITHUB_OUTPUT
       - name: Wait for the Docker image
         timeout-minutes: 15
