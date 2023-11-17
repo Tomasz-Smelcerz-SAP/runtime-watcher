@@ -5,39 +5,29 @@ env:
   CODE_REPOSITORY: Tomasz-Smelcerz-SAP/runtime-watcher
   #CODE_REPOSITORY=kyma-project/runtime-watcher
 on:
-  workflow_dispatch:
-    inputs:
-      name:
-        description: 'Existing tag for the new release'
-        default: ""
-        required: true
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]-?*'
 jobs:
   validate-release:
     name: Validate release
     runs-on: ubuntu-latest
     outputs:
+      current_release_tag: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
       last_release_tag: ${{ steps.get_last_release_tag.outputs.last_release_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Check if source code tag exists
-        run: |
-          if ! [ $(git tag -l ${{ inputs.name }}) ]; then
-            echo "::error ::Tag ${{ inputs.name }} doesn't exist"
-            exit 1
-          fi
-      - name: Check if docker image exists
-        run: |
-          if ! $(docker manifest inspect ${{ env.IMAGE_REPO }}:${{ inputs.name }} > /dev/null 2>&1); then
-            echo "::error ::docker image: ${{ env.IMAGE_REPO }}:${{ inputs.name }} doesn't exist"
-            exit 1
-          fi
+      - name: Find the release tag
+        id: get_current_release_tag
+        run: echo "current_release_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
       - name: Check if release doesn't exist yet
         env:
+          CURRENT_RELEASE_TAG: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./runtime-watcher/scripts/release/get_release_by_tag.sh ${{ inputs.name }}
+        run: ./runtime-watcher/scripts/release/get_release_by_tag.sh $CURRENT_RELEASE_TAG
       - name: Get last release version
         id: get_last_release_tag
         env:
@@ -52,6 +42,12 @@ jobs:
           fi
           set -e
           echo "last_release_tag=$SCRIPT_OUTPUT" >> $GITHUB_OUTPUT
+      - name: Wait for the Docker image
+        timeout-minutes: 15
+        env:
+          CURRENT_RELEASE_TAG: ${{ steps.get_current_release_tag.outputs.current_release_tag }}
+          IMAGE_URL: ${{ env.IMAGE_REPO }}:$CURRENT_RELEASE_TAG
+        run: ./runtime-watcher/scripts/release/wait_for_image.sh 
   draft-release:
     name: Create draft release
     runs-on: ubuntu-latest
@@ -67,18 +63,20 @@ jobs:
         id: generate_changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_RELEASE_TAG: ${{ needs.validate-release.outputs.current_release_tag }}
           LAST_RELEASE_TAG: ${{ needs.validate-release.outputs.last_release_tag }}
         run: |
-          echo "Generating changelog from version: ${{ inputs.name }} to version: $LAST_RELEASE_TAG" 
-          CHANGELOG_FILE_NAME=$(./runtime-watcher/scripts/release/create_changelog.sh ${{ inputs.name }} $LAST_RELEASE_TAG)
+          echo "Generating changelog for version: ${{ needs.validate-release.outputs.current_release_tag }}" 
+          CHANGELOG_FILE_NAME=$(./runtime-watcher/scripts/release/create_changelog.sh $CURRENT_RELEASE_TAG $LAST_RELEASE_TAG)
           echo "changelog_file_name=$CHANGELOG_FILE_NAME" >> $GITHUB_OUTPUT
       - name: Create draft release
         id: draft_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_RELEASE_TAG: ${{ needs.validate-release.outputs.current_release_tag }}
           CHANGELOG_FILE_NAME: ${{ steps.generate_changelog.outputs.changelog_file_name }}
         run: |
-          RELEASE_ID=$(./runtime-watcher/scripts/release/create_draft_release.sh ${{ inputs.name }} $CHANGELOG_FILE_NAME)
+          RELEASE_ID=$(./runtime-watcher/scripts/release/create_draft_release.sh $CURRENT_RELEASE_TAG $CHANGELOG_FILE_NAME)
           echo "RELEASE_ID=$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
   publish_release:
