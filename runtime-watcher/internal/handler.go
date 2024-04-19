@@ -231,7 +231,13 @@ func (h *Handler) checkForChange(resource *Resource, oldObj, obj WatchedObject) 
 			obj.Namespace, obj.Name)
 	}
 
+	if oldObj.Labels != nil && obj.Labels != nil && oldObj.Labels["foo"] != obj.Labels["foo"] {
+		h.logger.Info(fmt.Sprintf("Label foo changed from %s to %s", oldObj.Labels["foo"], obj.Labels["foo"]))
+	}
+	registerChange = registerChange || !reflect.DeepEqual(oldObj.Labels, obj.Labels)
+
 	return registerChange, nil
+
 }
 
 func (h *Handler) sendRequestToKcp(moduleName string, watched WatchedObject) error {
@@ -329,14 +335,20 @@ func (h *Handler) getHTTPSClient() (*http.Client, error) {
 		msg := "could not load CA certificate"
 		return nil, fmt.Errorf("%s :%w", msg, err)
 	}
-	publicPemBlock, _ := pem.Decode(caCertBytes)
-	rootPubCrt, errParse := x509.ParseCertificate(publicPemBlock.Bytes)
-	if errParse != nil {
-		msg := "failed to parse public key"
-		return nil, fmt.Errorf("%s :%w", msg, errParse)
-	}
+
 	rootCertPool := x509.NewCertPool()
-	rootCertPool.AddCert(rootPubCrt)
+	rest := caCertBytes
+	for len(rest) > 0 {
+		var publicPemBlock *pem.Block
+		publicPemBlock, rest = pem.Decode(rest)
+		rootPubCrt, errParse := x509.ParseCertificate(publicPemBlock.Bytes)
+		if errParse != nil {
+			msg := "failed to parse public key"
+			return nil, fmt.Errorf("%s :%w", msg, errParse)
+		}
+		rootCertPool.AddCert(rootPubCrt)
+		h.logger.Info(fmt.Sprintf("Added CA certificate to rootCertPool. %d bytes remaining", len(rest)))
+	}
 
 	httpsClient.Timeout = HTTPTimeout
 	//nolint:gosec
